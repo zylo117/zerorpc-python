@@ -29,7 +29,7 @@ from builtins import range
 
 import msgpack
 import msgpack_numpy as m
-m.patch()  # Monkeypatching msgpack to handle Numpy
+m.patch()
 import gevent.pool
 import gevent.queue
 import gevent.event
@@ -207,14 +207,16 @@ class Event(object):
 
     def pack(self):
         payload = (self._header, self._name, self._args)
-        r = msgpack.Packer(use_bin_type=True).pack(payload)
+        # r = msgpack.Packer(use_bin_type=True).pack(payload)
+        r = msgpack.packb(payload, use_bin_type=True)
         return r
 
     @staticmethod
     def unpack(blob):
-        unpacker = msgpack.Unpacker(raw=False)
-        unpacker.feed(blob)
-        unpacked_msg = unpacker.unpack()
+        # unpacker = msgpack.Unpacker(raw=False)
+        # unpacker.feed(blob)
+        # unpacked_msg = unpacker.unpack()
+        unpacked_msg = msgpack.unpackb(blob, raw=False)
 
         try:
             (header, name, args) = unpacked_msg
